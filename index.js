@@ -7,7 +7,7 @@ const app = express();
 //middleware
 
 const corsOptions = {
-    origin:["http://localhost:5173","http://localhost:5174"],
+    origin:["http://localhost:5173","http://localhost:5174","https://radiant-reverie.web.app"],
     credentials:true,
     OptionSuccessStatus:200,
 }
@@ -17,7 +17,7 @@ app.use(express.json())
 
 
 
-const uri =`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.2lcaz14.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri =`mongodb+srv://${process.env.DB_USER_KEY}:${process.env.DB_PASS_VALUE}@cluster0.2lcaz14.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -31,18 +31,26 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
         const serviceCollection = client.db('radiantSalon').collection('addService')
-        const serviceProviderCollection = client.db('radiantSalon').collection('providerService')
+        const serviceBookedCollection = client.db('radiantSalon').collection('providerService')
     
         //get all service data 
     app.get("/service", async(req,res)=>{
         const result = await serviceCollection.find().toArray()
         res.send(result);
     })
+    //get all booked service data
+
+    app.get('bookedService/:email',async(req,res)=>{
+      const email = req.params.email
+      const query = {'provider.email':email}
+      const result = await serviceBookedCollection.find(query).toArray()
+      res.send(result)
+    })
 
     //provider service data
     app.post("/pservice", async(req,res)=>{
       const serviceData = req.body
-        const result = await serviceProviderCollection.insertOne(serviceData)
+        const result = await serviceBookedCollection.insertOne(serviceData)
         res.send(result);
     })
     // post Service data
@@ -66,8 +74,8 @@ app.get("/service/:id",async(req,res)=>{
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
 
   }
