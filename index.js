@@ -53,6 +53,22 @@ app.get("/service/:id",async(req,res)=>{
   console.log(result)
   res.send(result)
 })
+//delete service data
+
+app.delete("/service/:id",async(req,res)=>{
+  const id = req.params.id
+  const query = {_id: new ObjectId(id)}
+  const result = await serviceCollection.deleteOne(query)
+  console.log(result)
+  res.send(result)
+})
+ app.get("/services/:email",async(req,res)=>{
+      const email = req.params.email
+      const query = {'provider.email':email}
+      console.log(query)
+      const result = await serviceCollection.find(query).toArray()
+      res.send(result)
+    })
 
     
     //provider service data
