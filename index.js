@@ -38,30 +38,14 @@ async function run() {
         const result = await serviceCollection.find().toArray()
         res.send(result);
     })
-    //get all booked service data
-
-    app.get('bookedService/:email',async(req,res)=>{
-      const email = req.params.email
-      const query = {'provider.email':email}
-      const result = await serviceBookedCollection.find(query).toArray()
-      res.send(result)
-    })
-
-    //provider service data
-    app.post("/pservice", async(req,res)=>{
-      const serviceData = req.body
-        const result = await serviceBookedCollection.insertOne(serviceData)
-        res.send(result);
-    })
-    // post Service data
+ // post Service data
     app.post("/postService", async(req,res)=>{
       const postServiceData = req.body
       const result = await serviceCollection.insertOne(postServiceData)
       res.send(result);
     })
 
-
- //get a single service data  from db using service id
+     //get a single service data  from db using service id
 app.get("/service/:id",async(req,res)=>{
   const id = req.params.id
   const query = {_id: new ObjectId(id)}
@@ -70,12 +54,28 @@ app.get("/service/:id",async(req,res)=>{
   res.send(result)
 })
 
+    
+    //provider service data
+    app.post("/bookedService", async(req,res)=>{
+      const serviceData = req.body
+      console.log(serviceData);
+        const result = await serviceBookedCollection.insertOne(serviceData)
+        res.send(result);
+    })
+    app.get("/bookedServices/:email",async(req,res)=>{
+      const email = req.params.email
+      const query = {provider_email:email}
+      console.log(query)
+      const result = await serviceBookedCollection.find(query).toArray()
+      res.send(result)
+    })
+
 
 
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
-    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
 
   }
