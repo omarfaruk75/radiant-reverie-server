@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+var jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT||5000;
@@ -33,6 +35,31 @@ async function run() {
         const serviceCollection = client.db('radiantSalon').collection('addService')
         const serviceBookedCollection = client.db('radiantSalon').collection('providerService')
     
+//json web token
+app.post('/jwt',async(req,res)=>{
+  const user=req.body
+  const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET,{
+    expiresIn:'7d'
+  })
+  res.cookie('token',token,{
+    httpOnly:true,
+    secure:process.env.NODE_ENV==='production',
+    sameSite:process.env.NODE_ENV==='production'?'none':'strict',
+  })
+  .send({success:true})
+})
+//clear token 
+
+app.get('/logout',(req,res)=>{
+  res.clearCookie('token',{
+    httpOnly:true,
+    secure:process.env.NODE_ENV==='production',
+    sameSite:process.env.NODE_ENV==='production'?'none':'strict',
+    maxAge:0,
+  })
+  .send({success:true})
+})
+
         //get all service data 
     app.get("/service", async(req,res)=>{
         const result = await serviceCollection.find().toArray()
