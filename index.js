@@ -61,10 +61,29 @@ app.get('/logout',(req,res)=>{
 })
 
         //get all service data 
-    app.get("/service", async(req,res)=>{
-        const result = await serviceCollection.find().toArray()
+
+app.get("/service", async (req, res) => {
+    const search = req.query.search;
+    let query = {};
+
+    if (search) {
+        query = {
+            serviceName: {
+                $regex: search,
+                $options: 'i'
+            }
+        };
+    }
+
+    try {
+        const result = await serviceCollection.find(query).toArray();
         res.send(result);
-    })
+    } catch (error) {
+        console.error("Error fetching services:", error);
+        res.status(500).json({ error: "Error fetching services" });
+    }
+});
+
  // post Service data
     app.post("/postService", async(req,res)=>{
       const postServiceData = req.body
