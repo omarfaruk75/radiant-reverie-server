@@ -94,7 +94,8 @@ app.get("/service", async (req, res) => {
      //get a single service data  from db using service id
 app.get("/service/:id",async(req,res)=>{
   const id = req.params.id
-  const query = {_id: new ObjectId(id)}
+  console.log(id)
+  const query = {_id:id}
   const result = await serviceCollection.findOne(query)
   console.log(result)
   res.send(result)
@@ -128,7 +129,7 @@ app.put('/service/:id',async (req,res)=>{
 
  app.get("/services/:email",async(req,res)=>{
       const email = req.params.email
-      const query = {'provider.email':email}
+      const query = {'provider_email':email}
       console.log(query)
       const result = await serviceCollection.find(query).toArray()
       res.send(result)
