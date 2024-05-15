@@ -129,7 +129,7 @@ app.put('/service/:id',async (req,res)=>{
 
  app.get("/services/:email",async(req,res)=>{
       const email = req.params.email
-      const query = {'provider_email':email}
+      const query = {email}
       console.log(query)
       const result = await serviceCollection.find(query).toArray()
       res.send(result)
