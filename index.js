@@ -60,7 +60,7 @@ app.get('/logout',(req,res)=>{
   .send({success:true})
 })
 
-        //get all service data 
+        //get all for search service data 
 
 app.get("/service", async (req, res) => {
     const search = req.query.search;
@@ -84,6 +84,13 @@ app.get("/service", async (req, res) => {
     }
 });
 
+
+ // get Service data
+      app.get("/services", async(req,res)=>{
+      const result = await serviceCollection.find().toArray();
+      console.log(result);
+      res.send(result);
+    })
  // post Service data
     app.post("/postService", async(req,res)=>{
       const postServiceData = req.body
@@ -129,29 +136,44 @@ app.put('/service/:id',async (req,res)=>{
 
  app.get("/services/:email",async(req,res)=>{
       const email = req.params.email
-      const query = {email}
+      const query = {'provider.email':email}
       console.log(query)
       const result = await serviceCollection.find(query).toArray()
       res.send(result)
     })
 
     
-    //provider service data
+    //get booked service data
+    app.get("/bookedService", async(req,res)=>{
+        const result = await serviceBookedCollection.find().toArray();
+        res.send(result);
+    })
+    //post service data
     app.post("/bookedService", async(req,res)=>{
       const serviceData = req.body
       console.log(serviceData);
         const result = await serviceBookedCollection.insertOne(serviceData)
         res.send(result);
     })
-    app.get("/bookedServices/:email",async(req,res)=>{
-      const email = req.params.email
-      const query = {email}
-      console.log(query)
-      const result = await serviceBookedCollection.find(query).toArray()
-      res.send(result)
-    })
+    // app.get("/bookedServices/:email",async(req,res)=>{
+    //   const email = req.params.email
+    //   const query = {email:userEmail}
+    //   console.log(query)
+    //   const result = await serviceBookedCollection.find(query).toArray()
+    //   res.send(result)
+    // })
 
-
+app.get("/bookedServices/:email", async (req, res) => {
+    const userEmail = req.params.email;
+    const query = { userEmail }; // Filter based on userEmail
+    try {
+        const result = await serviceBookedCollection.find(query).toArray();
+        res.send(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 
     // Send a ping to confirm a successful connection
