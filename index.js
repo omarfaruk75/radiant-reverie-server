@@ -102,7 +102,16 @@ app.get("/service", async (req, res) => {
 app.get("/service/:id",async(req,res)=>{
   const id = req.params.id
   console.log(id)
-  const query = {_id:id}
+  const query = {_id:new ObjectId(id)}
+  const result = await serviceCollection.findOne(query)
+  console.log(result)
+  res.send(result)
+})
+     //get a single service data  from db using service id
+app.get("/service/details/:id",async(req,res)=>{
+  const id = req.params.id
+  console.log(id)
+  const query = {_id:new ObjectId(id)}
   const result = await serviceCollection.findOne(query)
   console.log(result)
   res.send(result)
@@ -155,19 +164,33 @@ app.put('/service/:id',async (req,res)=>{
         const result = await serviceBookedCollection.insertOne(serviceData)
         res.send(result);
     })
-    // app.get("/bookedServices/:email",async(req,res)=>{
-    //   const email = req.params.email
-    //   const query = {email:userEmail}
-    //   console.log(query)
-    //   const result = await serviceBookedCollection.find(query).toArray()
-    //   res.send(result)
-    // })
+    app.get("/bookedService/:id",async(req,res)=>{
+      const id = req.params.id
+      const query={_id:new ObjectId(id)}
+      const result = await serviceBookedCollection.findOne(query);
+      res.send(result)
+    })
 
-app.get("/bookedServices/:email", async (req, res) => {
-    const userEmail = req.params.email;
-    const query = { userEmail }; // Filter based on userEmail
+app.patch('/bookedService/update/:id',async(req,res)=>{
+  const {status}=req.body;
+  const id=req.params.id;
+  const query={_id:new ObjectId(id)}
+  const updatedDoc={
+    $set:{
+          status
+    }
+  }
+  const result=await serviceBookedCollection.updateOne(query,updatedDoc);
+  res.send(result);
+})
+
+
+app.get("/bookedServicesByProvider/:email", async (req, res) => {
+    const providerEmail = req.params.email;
+    const query = { providerEmail }; // Filter based on providerEmail
     try {
         const result = await serviceBookedCollection.find(query).toArray();
+        console.log(result);
         res.send(result);
     } catch (error) {
         console.error(error);
